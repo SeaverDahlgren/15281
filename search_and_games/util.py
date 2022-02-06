@@ -217,6 +217,10 @@ class PriorityQueue:
 
     def isEmpty(self):
         return len(self.heap) == 0
+    
+    def contains(self, item):
+        "Returns true if item is in the Priority Queue"
+        return item in self.heap
 
     def update(self, item, priority):
         # If item already in priority queue with higher priority, update its priority and rebuild the heap.

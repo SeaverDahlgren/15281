@@ -206,7 +206,24 @@ def iterativeDeepeningSearch(problem):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
+    exploredSet = set()
+    frontier = util.PriorityQueueWithFunction(heuristic)
+    start = problem.getStartState()
+    startNode = Node(start, None, None, 1)
+    frontier.push(startNode)
+    while True:
+        if frontier.isEmpty():
+            return []
+        node = frontier.pop()
+        if problem.goalTest(node.state):
+            return solutionFromState(problem, node)
+        exploredSet.add(node)
+        for action in problem.getActions(node.state):
+            child = problem.getResult(node.state, action)
+            childNode = Node(child, node, action, node.path_cost + 1)
+            if (not frontier.contains(childNode) and 
+                childNode not in exploredSet):
+                frontier.push(childNode)
     util.raiseNotDefined()
 
 # Abbreviations
