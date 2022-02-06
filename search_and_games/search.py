@@ -137,6 +137,41 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+def printStack(stack):
+    print("Frontier:")
+    for node in stack.list:
+        print(node.state)
+
+def solutionFromState(problem, node):
+    path = []
+    curr = node
+    while problem.getStartState() != curr.state:
+        path = [curr.action] + path
+        curr = curr.parent
+    return path
+
+def dfsSearch(problem, depth):
+    exploredSet = set()
+    frontier = util.Stack()
+    start = problem.getStartState()
+    startNode = Node(start, None, None, 1)
+    frontier.push(startNode)
+    while True:
+        if frontier.isEmpty():
+            return []
+        node = frontier.pop()
+        if problem.goalTest(node.state):
+            return solutionFromState(problem, node)
+        exploredSet.add(node)
+        if node.path_cost == depth:
+            continue
+        for action in problem.getActions(node.state):
+            child = problem.getResult(node.state, action)
+            childNode = Node(child, node, action, node.path_cost + 1)
+            if (not frontier.contains(childNode) and 
+                childNode not in exploredSet):
+                frontier.push(childNode)
+
 def iterativeDeepeningSearch(problem):
     """
     Perform DFS with increasingly larger depth. Begin with a depth of 1 and increment depth by 1 at every step.
@@ -160,8 +195,14 @@ def iterativeDeepeningSearch(problem):
     was called. To make the autograder happy, do the depth check after the goal test but before calling getActions.
 
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    depth = 1
+    while True:
+        result = dfsSearch(problem, depth)
+        print("Result: ", result)
+        if result != []:
+            return result
+        depth += 1
+    # util.raiseNotDefined()
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
