@@ -198,6 +198,10 @@ def iterativeDeepeningSearch(problem):
     depth = 1
     while True:
         result = dfsSearch(problem, depth)
+<<<<<<< HEAD
+=======
+        print("Result: ", result)
+>>>>>>> 70bc67ab8760da5fd16a02ddb8afa3151411b7e7
         if result != []:
             return result
         depth += 1
