@@ -283,22 +283,24 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
-        "*** YOUR CODE HERE ***"
 
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if self.startingPosition in self.corners:
+            newCorners = tuple(corner for corner in self.corners if corner != self.startingPosition)
+        else:
+            newCorners = self.corners
+        return (self.startingPosition, newCorners)
 
     def goalTest(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        _, corners = state
+        return len(corners) == 0
 
     def getActions(self, state):
         """
@@ -327,8 +329,18 @@ class CornersProblem(search.SearchProblem):
         #   dx, dy = Actions.directionToVector(action)
         #   nextx, nexty = int(x + dx), int(y + dy)
         #   hitsWall = self.walls[nextx][nexty]
-
-        "*** YOUR CODE HERE ***"
+        (x, y), corners = state
+        dx, dy = Actions.directionToVector(action)
+        nextx, nexty = int(x + dx), int(y + dy)
+        hitsWall = self.walls[nextx][nexty]
+        if hitsWall: return state
+        
+        if (nextx, nexty) in corners:
+            newCorners = tuple(corner for corner in corners if corner != (nextx, nexty))
+        else:
+            newCorners = corners
+        return ((nextx, nexty), newCorners)
+            
 
     def getCost(self, state, action):
         """Given a state and an action, returns a cost of 1, which is

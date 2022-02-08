@@ -198,7 +198,6 @@ def iterativeDeepeningSearch(problem):
     depth = 1
     while True:
         result = dfsSearch(problem, depth)
-        print("Result: ", result)
         if result != []:
             return result
         depth += 1
@@ -206,24 +205,25 @@ def iterativeDeepeningSearch(problem):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    exploredSet = set()
-    frontier = util.PriorityQueueWithFunction(heuristic)
+    explored = set()
     start = problem.getStartState()
-    startNode = Node(start, None, None, 1)
-    frontier.push(startNode)
+    Parent = Node(start, None, None, 0)
+    Frontier = util.PriorityQueue()
+    Frontier.push((Parent), heuristic(start, problem))
     while True:
-        if frontier.isEmpty():
+        if Frontier.isEmpty():
             return []
-        node = frontier.pop()
-        if problem.goalTest(node.state):
-            return solutionFromState(problem, node)
-        exploredSet.add(node)
-        for action in problem.getActions(node.state):
-            child = problem.getResult(node.state, action)
-            childNode = Node(child, node, action, node.path_cost + 1)
-            if (not frontier.contains(childNode) and 
-                childNode not in exploredSet):
-                frontier.push(childNode)
+        popped = Frontier.pop()
+        if problem.goalTest(popped.state):
+            return solutionFromState(problem, popped)
+        explored.add(popped.state)
+        for action in problem.getActions(popped.state):
+            nextStateName = problem.getResult(popped.state, action)
+            h = heuristic(nextStateName, problem) 
+            g = problem.getCost(popped.state, action) + popped.path_cost
+            nextState = Node(nextStateName, popped, action, g)
+            if nextStateName not in explored:
+                Frontier.update(nextState, h + g)
     util.raiseNotDefined()
 
 # Abbreviations
