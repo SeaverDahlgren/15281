@@ -152,6 +152,35 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
     Your minimax agent (question 7)
     """
+    def getValue(self, gameState, agentIndex, numAgents, depth):
+        if depth == 0 or gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState)
+        
+        if agentIndex == 0:
+            bestScore = -99999 
+            for action in gameState.getLegalActions(agentIndex):
+                newState = gameState.generateSuccessor(agentIndex, action)
+                
+                score = self.getValue(newState, (agentIndex + 1) % numAgents, numAgents, depth)
+                if score > bestScore:
+                    bestScore = score
+                # alpha = max(alpha, score)
+                # if beta <= alpha:
+                #     break
+            return bestScore
+        else:
+            bestScore = 99999
+            depth = depth - 1 if (agentIndex + 1 == numAgents) else depth
+            for action in gameState.getLegalActions(agentIndex):
+                newState = gameState.generateSuccessor(agentIndex, action)
+                
+                score = self.getValue(newState, (agentIndex + 1) % numAgents, numAgents, depth)
+                if score < bestScore:
+                    bestScore = score
+                # beta = min(beta, score)
+                # if beta <= alpha:
+                #     break
+            return bestScore
 
     def getAction(self, gameState):
         """
@@ -170,7 +199,15 @@ class MinimaxAgent(MultiAgentSearchAgent):
         gameState.getNumAgents():
         Returns the total number of agents in the game
         """
-        "*** YOUR CODE HERE ***"
+        bestScore, bestAction = None, None
+        numAgents = gameState.getNumAgents()
+        for action in gameState.getLegalActions(0):
+            newState = gameState.generateSuccessor(0, action)
+            cScore = self.getValue(newState, 1, numAgents, self.depth)
+            if bestScore == None or bestScore < cScore:
+                bestAction = action
+                bestScore = cScore
+        return bestAction
         util.raiseNotDefined()
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
