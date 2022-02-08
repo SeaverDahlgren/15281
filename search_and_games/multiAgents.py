@@ -32,6 +32,17 @@ import random, util
 
 from game import Agent
 
+def getClosestFood(pPos, grid):
+    minDistance = None
+    minPos = None
+    for row in range(grid.width):
+        for col in range(grid.height):
+            if grid[row][col] and (minPos == None or
+                manhattanDistance(pPos, (row, col)) < minDistance):
+                minDistance = manhattanDistance(pPos, (row, col))
+                minPos = (row, col)
+    return minPos, minDistance
+
 class ReflexAgent(Agent):
     """
     A reflex agent chooses an action at each choice point by examining
@@ -81,14 +92,31 @@ class ReflexAgent(Agent):
         to create a masterful evaluation function.
         """
         # Useful information you can extract from a GameState (pacman.py)
+        currPos = currentGameState.getPacmanPosition()
         successorGameState = currentGameState.generatePacmanSuccessor(action)
         newPos = successorGameState.getPacmanPosition()
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
-        newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
-        "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        closestFood, closeDist = getClosestFood(currPos, newFood)
+        newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+        ghostPositions = successorGameState.getGhostPositions()
+
+        score = successorGameState.getScore()
+
+        x, y = currPos
+        cX, cY = newPos
+        if newFood[cX][cY]: score += 40
+        for pos in ghostPositions:
+            dist = manhattanDistance(newPos, pos)
+            if dist == 0: score = 0
+            # if dist == 1: score -= 100
+       
+        if closeDist is not None and (
+           manhattanDistance(newPos, closestFood) < closeDist):
+            score += 20
+
+        return score
 
 def scoreEvaluationFunction(currentGameState):
     """
