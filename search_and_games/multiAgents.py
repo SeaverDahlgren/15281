@@ -214,6 +214,30 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     """
     Your expectimax agent (question 8)
     """
+    def expectiValue(self, gameState, agentIndex, numAgents, depth):
+        if depth == 0 or gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState)
+            
+        if agentIndex == 0:
+            bestScore = -99999 
+            for action in gameState.getLegalActions(agentIndex):
+                newState = gameState.generateSuccessor(agentIndex, action)
+                
+                score = self.expectiValue(newState, (agentIndex + 1) % numAgents, numAgents, depth)
+                if score > bestScore:
+                    bestScore = score
+                # alpha = max(alpha, score)
+                # if beta <= alpha:
+                #     break
+            return bestScore
+        else:
+            totalScore = 0
+            depth = depth - 1 if (agentIndex + 1 == numAgents) else depth
+            for action in gameState.getLegalActions(agentIndex):
+                newState = gameState.generateSuccessor(agentIndex, action)
+                score = self.expectiValue(newState, (agentIndex + 1) % numAgents, numAgents, depth)
+                totalScore += score
+            return totalScore/len(gameState.getLegalActions(agentIndex))
 
     def getAction(self, gameState):
         """
@@ -223,7 +247,16 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        bestScore, bestAction = None, None
+        numAgents = gameState.getNumAgents()
+        for action in gameState.getLegalActions(0):
+            newState = gameState.generateSuccessor(0, action)
+            cScore = self.expectiValue(newState, 1, numAgents, self.depth)
+            if bestScore == None or bestScore < cScore:
+                bestAction = action
+                bestScore = cScore
+        return bestAction
+    
 
 def betterEvaluationFunction(currentGameState):
     """
