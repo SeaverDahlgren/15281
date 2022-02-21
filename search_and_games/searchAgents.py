@@ -509,7 +509,8 @@ def foodHeuristic(state, problem):
     for x in range(foodGrid.width):
         for y in range(foodGrid.height):
             if foodGrid[x][y]:
-                distances.append(util.manhattanDistance([px, py], [x, y]))
+                manDist = mazeDistance((px, py), (x, y), problem.startingGameState)     
+                distances.append(manDist)
     return max(distances) if len(distances) > 0 else 0
 
 def mazeDistance(point1, point2, gameState):

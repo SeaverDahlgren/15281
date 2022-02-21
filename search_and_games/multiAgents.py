@@ -263,9 +263,9 @@ def betterEvaluationFunction(currentGameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 9).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION: Just returns 0 :(
     """
-    "*** YOUR CODE HERE ***"
+    return 0
     util.raiseNotDefined()
 
 # Abbreviation
